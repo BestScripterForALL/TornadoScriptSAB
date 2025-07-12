@@ -209,6 +209,50 @@ KillAuraButton.MouseButton1Click:Connect(function()
     if KillAuraActive then startKillAura() end
 end)
 
+local AutoLockActive = false
+local AutoLockThread
+
+local AutoLockButton = Instance.new("TextButton", MenuFrame)
+AutoLockButton.Size = UDim2.new(0,260,0,40)
+AutoLockButton.Position = UDim2.new(0.5,0,0,160)
+AutoLockButton.AnchorPoint = Vector2.new(0.5,0)
+AutoLockButton.Text = "AutoLock Base: OFF"
+AutoLockButton.TextScaled = true
+AutoLockButton.Font = Enum.Font.GothamBold
+AutoLockButton.BackgroundColor3 = Color3.fromRGB(150,0,0)
+AutoLockButton.TextColor3 = Color3.new(1,1,1)
+AutoLockButton.BorderSizePixel = 0
+Instance.new("UICorner", AutoLockButton).CornerRadius = UDim.new(0,8)
+
+local function teleportToLockTouch()
+    local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    local base = workspace:FindFirstChild("Bases") and workspace.Bases:FindFirstChild("Players") and workspace.Bases.Players:FindFirstChild(LocalPlayer.Name)
+    if hrp and base and base:FindFirstChild("LockTouch") then
+        hrp.CFrame = base.LockTouch.CFrame + Vector3.new(0, 3, 0)
+    end
+end
+
+local function startAutoLock()
+    if AutoLockThread then return end
+    AutoLockThread = task.spawn(function()
+        while AutoLockActive do
+            local base = workspace:FindFirstChild("Bases") and workspace.Bases:FindFirstChild("Players") and workspace.Bases.Players:FindFirstChild(LocalPlayer.Name)
+            if base and not base:FindFirstChild("Lasers") then
+                teleportToLockTouch()
+            end
+            task.wait(0.5)
+        end
+        AutoLockThread = nil
+    end)
+end
+
+AutoLockButton.MouseButton1Click:Connect(function()
+    AutoLockActive = not AutoLockActive
+    AutoLockButton.Text = AutoLockActive and "AutoLock Base: ON" or "AutoLock Base: OFF"
+    AutoLockButton.BackgroundColor3 = AutoLockActive and Color3.fromRGB(0,150,0) or Color3.fromRGB(150,0,0)
+    if AutoLockActive then startAutoLock() end
+end)
+
 MenuToggleButton.MouseButton1Click:Connect(function()
     MenuFrame.Visible = not MenuFrame.Visible
 end)
