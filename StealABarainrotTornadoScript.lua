@@ -261,7 +261,7 @@ local function AutoLockBaseCheck()
                 if not data then return false end
 
                 local locked = data:FindFirstChild("Locked")
-                if not locked or not locked:IsA("IntValue") then return false end
+                if not locked or not locked:IsA("NumberValue") then return false end
 
                 if locked.Value <= 1 then
                     local lockTouch = base:FindFirstChild("LockTouch")
